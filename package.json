@@ -1,0 +1,20 @@
+{
+  "name": "react18-presentation",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@marp-team/marp-cli": "^4.1.2",
+    "@types/bun": "latest",
+    "live-server": "^1.2.2"
+  },
+  "scripts": {
+    "preview": "marp presentation.md --html --watch",
+    "build": "marp presentation.md --pdf",
+    "start": "cmd /c start presentation.html",
+    "live": "live-server --open=./presentation.html"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
