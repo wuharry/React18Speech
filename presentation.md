@@ -5,7 +5,7 @@ theme: default
 paginate: true
 --------------
 
-# React 18 重點整理 🚀
+# React 重點整理 🚀
 
 簡報人：Neo.Wu
 
@@ -13,27 +13,59 @@ paginate: true
 
 ## 🤔 React 是什麼？
 
-* 用於建構 **使用者介面（UI）** 的 JavaScript 函式庫。
-* 與 Angular、Vue 並列為主流前端框架。
-* 最核心的理念是：**一切皆元件（components）**。
-* 虛擬 DOM （Virtual DOM），減少 DOM 操作。
+* 建構使用者介面的 JavaScript 函式庫
+* 核心理念：**一切皆元件**
+* 採用 Virtual DOM 技術，提升效能
+* 適合構建 SPA、互動性高的應用程式
 
 ---
 
-## 🧱 元件與 JSX
+## 🧱 元件化的力量
 
-* 元件是回傳 React 元素的函式，需使用大寫命名（PascalCase）。
-* 元件可以巢狀組合，形成 Component Tree。
-* JSX 是 JavaScript 語法糖，類似 HTML，但會被轉換為 `React.createElement(...)`。
-* JSX 中多個元素需用單一父元素包裹，可用 `<></>` 簡寫。
+* 元件 = UI 的最小單位，可組合、可重用
+* 使用 JSX 編寫，看起來像 HTML，實際是 JS 語法
+* 每個元件是函式，回傳 React 元素
+* 元件名稱需以大寫開頭（PascalCase）
 
 ---
 
-## 🌱 React 元素與渲染原理
+## 🔁 傳統做法的限制（jQuery / JS）
 
-* JSX 描述的是 **React 元素**（其實是 JS 物件）。
-* React 將元件渲染到 HTML 的根節點（通常是 `#root`）。
-* React 18 開始：
+* 沒有資料驅動 UI 的能力 → 要手動操作 DOM
+* 缺乏結構化與組件化 → 維護困難
+* 事件與資料分離 → 邏輯與畫面難以同步
+* React 解決這些問題，**用資料決定 UI**
+
+---
+
+## ⚙️ Virtual DOM 與效能
+
+* Virtual DOM 是一棵 JS 物件樹，描述 UI
+* 每次 state 或 props 改變，React 都會建立新 Virtual DOM
+* 利用 diff 演算法比對新舊差異，只更新有變化的部分
+* 減少 DOM 操作，提升效能
+
+---
+
+## ❗️未加 key 的風險（示意）
+
+```tsx
+{users.map(user => (
+  <li>{user}</li> // 沒有加 key！
+))}
+```
+
+* React 會用「順序」來判斷元素 → 容易出錯
+* 如果重新排序或刪除元素，input 的值可能會跳位置
+* 必須加上穩定且唯一的 `key`
+
+---
+
+## JSX 與渲染原理
+
+* JSX 寫法簡潔，底層會被轉譯為 `React.createElement(...)`
+* 元件會渲染到 HTML 中的 `#root` 容器中
+* React 18 使用 `createRoot`：
 
 ```tsx
 import { createRoot } from 'react-dom/client';
@@ -41,105 +73,79 @@ const root = createRoot(document.getElementById('root'));
 root.render(<App />);
 ```
 
-> `createRoot` 是 React 18+ 的標準入口方法。
-
 ---
 
-## 🔄 Automatic Batching
+## 📦 Props：父 → 子
 
-在 React 18 中，**多個 state 更新會自動批次處理**：
-
-```tsx
-setCount(1);
-setName("React 18");
-// 只會觸發一次 render
-```
-
-這可以提升效能，減少不必要的重新渲染。
-
----
-
-## 🧵 startTransition API
-
-讓非緊急的 UI 更新變得更平滑：
+* 元件之間透過 props 傳遞資料
+* props 是唯讀的（單向資料流）
+* 可重用性高
 
 ```tsx
-import { startTransition } from 'react';
-
-startTransition(() => {
-  setValue(input);
-});
-```
-
-避免因大量渲染造成的卡頓，常搭配搜尋或過濾列表使用。
-
----
-
-## ⏳ useTransition & useDeferredValue
-
-* `useTransition`: 追蹤 transition 狀態（是否在 transition 中）
-* `useDeferredValue`: 延遲非緊急的更新內容
-
-```tsx
-const [isPending, startTransition] = useTransition();
+function Welcome(props) {
+  return <h1>Hello, {props.name}</h1>;
+}
 ```
 
 ---
 
-## 🧠 Suspense Everywhere
+## 🔧 State：元件自己的狀態
 
-React 18 支援 Suspense 用於**任何 UI 部分**，而不只是 lazy-loading。
-
-可以搭配資料取得，例如：
+* 使用 `useState` 宣告變動資料
+* 當 state 改變時，React 重新 render
+* 不可直接修改，要透過 `setState` 函式
 
 ```tsx
-<Suspense fallback={<Spinner />}>
-  <UserProfile />
-</Suspense>
+const [count, setCount] = useState(0);
 ```
 
 ---
 
-## 🧪 Server Components（實驗性）
+## 🔁 Hooks 與生命週期對應
 
-* 可在伺服器端執行 React component，減少傳輸 JS。
-* 目前僅 Next.js 13+ 支援，仍在開發中。
-
----
-
-## 🎛️ 狀態、Props 與事件
-
-* **Props**：由父元件傳給子的資料。只讀。
-* **State**：元件內部狀態，使用 `useState` 控制。
-* **事件處理**：如 `onClick={() => ...}`，注意不要加括號呼叫函式。
+* Mount：`useEffect(() => {}, [])`
+* Update：`useEffect(() => {}, [dep])`
+* Unmount：`useEffect(() => { return () => {} }, [])`
 
 ---
 
-## 🔁 副作用與 Hooks
+## 🎛️ React Hooks 快速瀏覽
 
-* 副作用（side effect）：如 API 請求、DOM 操作，使用 `useEffect` 處理。
-* 其他常用 Hook：
-
-  * `useRef`：儲存 DOM 參照或非 UI 資料。
-  * `useReducer`：複雜狀態管理。
-
----
-
-## 🧠 其他實用概念
-
-* **條件渲染**：用 `if` 或三元運算決定是否渲染。
-* **列表渲染**：用 `map` 輸出元素，需提供唯一的 `key`。
-* **宣告式程式設計**：描述 UI 應長什麼樣，React 自動處理 DOM 更新。
+* `useState`：狀態管理
+* `useEffect`：處理副作用、生命週期
+* `useRef`：存取 DOM
+* `useReducer`：複雜狀態管理
+* `useContext`：資料共享
+* `useMemo` / `useCallback`：效能最佳化
 
 ---
 
-## 🛠️ 建議學習順序與實踐
+## ⚠️ 錯誤範例提示（互動展示）
 
-1. 熟悉 HTML / CSS / JS 基礎。
-2. 從靜態元件開始，進階到有互動的 UI。
-3. 多練習小專案，加深理解。
-4. 使用 VSCode + React DevTools 開發輔助。
-5. 熟悉建構工具如 Vite、Next.js。
+* 直接改 state → 不會觸發更新
+* 未展開完整 state 更新 → 遺失值、出現 `undefined`
+* 沒加 `key` 導致 input 錯位
+* `value` 變 `undefined` → controlled → uncontrolled 錯誤
+
+> （示範程式碼建議放在 Live Demo 或手動補充）
+
+---
+
+## 🧠 宣告式設計理念
+
+* React 提倡宣告式程式設計
+* 用「資料 → 描述 UI」的方式思考
+* 抽象化 DOM 操作，提升維護性與一致性
+
+---
+
+## 🛠️ 學習建議
+
+1. 熟 HTML / CSS / JS 基礎
+2. 從簡單互動元件開始
+3. 練習拆分元件、資料流思考
+4. 熟悉 DevTools 與除錯工具
+5. 建構專案從靜態頁 → 互動應用
 
 ---
 
@@ -153,4 +159,4 @@ React 18 支援 Suspense 用於**任何 UI 部分**，而不只是 lazy-loading�
 
 ## 🙌 感謝聆聽！
 
-有問題歡迎發問 💬
+歡迎提問交流 💬
