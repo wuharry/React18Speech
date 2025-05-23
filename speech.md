@@ -113,6 +113,7 @@ A:React是單向綁定。
 * A:不能直接修改 state
 * Q:為甚麼今天按了按鈕之後我輸入其他的資料,他分數才會更新
 * A:這其實只是「碰巧」更新，不是正確流程。React 他沒有偵測到變化因為play物件的參考她其實沒有更新,也就是他的記憶體的地址沒變,所以她不會更新,然後你改了其他的狀態觸發了重新渲染他才會顯示你更新的值
+
 * 所以從這邊可以看出一些React state的端倪你重新渲染只要不是有更動的state的話,他會根據從參考取出值,那有正確更動state的情況不只值會更新其參考也會更新,這也就是跟react state array只能用特定方式更新有關(你們能理解為甚麼不能用for更新了八)
 * Q:為甚麼我更改lastName的時候會有報錯?
 * A:不完整的狀態更新,更新物件時要展開其他欄位,不然其他的部分會變undefined
@@ -138,20 +139,47 @@ function handleFirstNameChange(e) {
 * Q:有沒有人知道useRef的其他用法
 * A:你希望它記住某個值得時候,但是你不希望它重新渲染的時候被重新初始化,但是你更動它得時候畫面不要重新渲染。或是你希望它能夠在組件的生命週期內保持不變。
 
-* forwardRef簡單來說它就是穿透的ref 因為一般的父組件是拿不到子組件的ref的,但是forwardRef可以讓父組件拿到子組件的ref。
+* forwardRef簡單來說它就是穿透的ref 因為一般的父組件是拿不到子組件的ref的,但是forwardRef可以讓父組件拿到子組件的ref。這樣父組件就可操作子組件的dom了
 * https://react.dev/reference/react/forwardRef
+Q:直接操作dom對React有甚麼影響?
+A:https://react.dev/learn/manipulating-the-dom-with-refs#accessing-another-components-dom-nodes
+,這段的 However, if you try to modify the DOM manually, you can risk conflicting with the changes React is making.
+就說明了你手動操作dom可能會跟react有衝突,基本上官方不鼓勵手動操作dom,通常他不會有警告或是報錯,但某些情況會有(這個我就不細說)
+直接操作DOM基本上也是繞過虛擬dom,所以react的優勢他就沒有吃到了
 
 
-* 是的，在 React 中 每次組件重新渲染時，裡面定義的函式（function）都會被重新宣告一次。
+
+`useCallback` 是 React 提供的一個 hook，用於優化性能。
+簡單來說:
+
+* 在 React 中 每次組件重新渲染時，裡面定義的函式（function）都會被重新宣告一次。
 * 在大多數情況下這不會出事，但如果你把這個 function 傳給其他 component、或放在依賴陣列中（像是 useEffect）時，新的 function 會被視為「變了」，導致：
 
 不必要的子元件 re-render
 
 不必要的 effect 重新執行
 就是幫你記住這個 function， 讓它不要每次重渲染都重新生出來，除非它依賴的變數變了。
+useCallback可以接受一個函式一個依賴當參數
 
+`useMemo` 是 React 提供的一個 hook，用於優化性能。
 
+官方的講法是說:
+useMemo是一個 React Hook，可讓您在重新渲染之間快取計算結果。
+useMemo 是用來記憶計算的結果,避免說每次render的時候我都要跑那個計算的函式(這個函式通常是昂貴的計算),useMemo 可以用於提高效能，因為它可以避免不必要的計算。
+useMemo 接受一個「計算函式」和一個「依賴陣列」作為參數。
+當依賴陣列中的任何項目改變時，計算函式將重新執行。
 
+useMemo 會返回計算函式的結果，並且只在依賴陣列中的項目改變時才重新計算。
+
+他通常會用在當你今天有些值是會根據某些依賴去計算的時候
+Q:useMemo的dependency 一般都會是甚麼?
+A:一般會是state,props,或者是其他的hook的結果或是context 來的值,但是通常不是變數或是函式的回傳
+
+Q:那剛剛說到複雜的計算有人能大概描述下可能的情境嗎?
+A:
+
+Q:useMemo 的空依賴（[]）跟 useRef 存資料的差別在哪裡
+A:表面上看起來這兩個東西都不會隨著 render 而重新宣告。但是你可以改useRef的value,不過useMemo回傳的東西就是readonly的,所以你不能改他的value,所以兩者有在應用上的區別
 
 ```javaScript
 const inputRef = useRef(null);
