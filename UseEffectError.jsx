@@ -11,13 +11,13 @@ export function App(props) {
       <h1>Hello React.</h1>
       <h2>Start editing to see some magic happen!</h2>
       <button onClick={handleClick}>Count: {count}</button>
-      <Child name="John" id={1} />
+      <Child name="John" key={count} id={count} />
     </div>
   );
 }
 function Child({ name, id }) {
   useEffect(() => {
-    console.log("Child mounted"); // 只會執行一次
+    console.log("Child mounted");
   }, []);
 
   return <div>Hello {name}</div>;

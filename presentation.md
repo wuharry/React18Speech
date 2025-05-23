@@ -113,29 +113,11 @@ const [count, setCount] = useState(0);
 
 * `useState`：狀態管理
 * `useEffect`：處理副作用、生命週期
-* `useRef`：存取 DOM
-* `useReducer`：複雜狀態管理
+* `useRef`：[存取 DOM](http://zh-hans.react.dev/reference/react/useRef)
+* `forwardRef`：[傳遞 ref]([URL_ADDRESS-hans.react.dev/reference/react/forwardRef](https://react.dev/reference/react/forwardRef))
 * `useContext`：資料共享
-* `useMemo` / `useCallback`：效能最佳化
-
----
-
-## ⚠️ 錯誤範例提示（互動展示）
-
-* 直接改 state → 不會觸發更新
-* 未展開完整 state 更新 → 遺失值、出現 `undefined`
-* 沒加 `key` 導致 input 錯位
-* `value` 變 `undefined` → controlled → uncontrolled 錯誤
-
-> （示範程式碼建議放在 Live Demo 或手動補充）
-
----
-
-## 🧠 宣告式設計理念
-
-* React 提倡宣告式程式設計
-* 用「資料 → 描述 UI」的方式思考
-* 抽象化 DOM 操作，提升維護性與一致性
+* `useMemo` / `useCallback`：效能最佳化 [useMemo](https://legacy.reactjs.org/docs/hooks-reference.html#usememo)
+[useCallback](https://zh-hans.react.dev/reference/react/useCallback)
 
 ---
 
@@ -154,9 +136,11 @@ const [count, setCount] = useState(0);
 * [https://react.dev/](https://react.dev/)
 * [https://reactjs.org/blog/2022/03/29/react-v18.html](https://reactjs.org/blog/2022/03/29/react-v18.html)
 * [https://react.dev/learn/start-a-new-react-project](https://react.dev/learn/start-a-new-react-project)
+* 
 
 ---
 
 ## 🙌 感謝聆聽！
+
 
 歡迎提問交流 💬
